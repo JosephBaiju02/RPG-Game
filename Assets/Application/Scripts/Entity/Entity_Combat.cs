@@ -22,11 +22,11 @@ public class Entity_Combat : MonoBehaviour
             damagable?.TakeDamage(damage, transform);
 
 
-           
+            Debug.Log("Taken Damage" + damagable);
         }
     }
 
-    private Collider2D[] GetDetectedColliders()
+    protected Collider2D[] GetDetectedColliders()
     {
         return Physics2D.OverlapCircleAll(targetCheck.position,targetCheckRadious,targetLayerMask);
     }

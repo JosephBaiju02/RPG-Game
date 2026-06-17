@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Enemy_Skelton : Enemy,ICounterable
 {
+    public bool CanBeCountered { get => canBeStunned;}
 
     protected override void Awake()
     {
@@ -22,7 +23,7 @@ public class Enemy_Skelton : Enemy,ICounterable
     [ContextMenu("Stun Enemy")]
     public void HandleCounter()
     {
-        if (canBeStunned == false)
+        if (CanBeCountered == false)
             return;
         stateMachine.ChangeState(stunnedState);
     }

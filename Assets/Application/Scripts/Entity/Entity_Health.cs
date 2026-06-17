@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Entity_Health : MonoBehaviour
+public class Entity_Health : MonoBehaviour, IDamagable
 {
     Entity entity;
     private Entity_VFX entity_VFX;
@@ -28,6 +28,7 @@ public class Entity_Health : MonoBehaviour
     }
     public virtual void TakeDamage(float damage,Transform damageDealer)
     {
+        Debug.Log("Take Damage Called");
         if (isDead)
             return;
         Vector2 knockBack = CalculateKnockBack(damage,damageDealer);
