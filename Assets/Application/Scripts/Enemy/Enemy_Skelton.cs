@@ -1,7 +1,8 @@
 using UnityEngine;
 
-public class Enemy_Skelton : Enemy
+public class Enemy_Skelton : Enemy,ICounterable
 {
+
     protected override void Awake()
     {
         base.Awake();
@@ -10,11 +11,19 @@ public class Enemy_Skelton : Enemy
         attackState = new Enemy_AttackState(this,stateMachine,"attack");
         battleState = new Enemy_BattleState(this,stateMachine, "battle");
         deathState = new Enemy_DeathState(this,stateMachine,"idle");
+        stunnedState = new Enemy_StunnedState(this, stateMachine, "stunned");
     }
 
     protected override void Start()
     {
         base.Start();
         stateMachine.Intialize(idleState);
+    }
+    [ContextMenu("Stun Enemy")]
+    public void HandleCounter()
+    {
+        if (canBeStunned == false)
+            return;
+        stateMachine.ChangeState(stunnedState);
     }
 }
