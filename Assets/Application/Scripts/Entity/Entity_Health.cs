@@ -1,12 +1,19 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Entity_Health : MonoBehaviour, IDamagable
 {
+
+    private Slider healthBar;
     Entity entity;
     private Entity_VFX entity_VFX;
+
+    private Entity_Stats stats;
+
+
     [SerializeField] protected float currentHp;
-    [SerializeField] protected float maxHp = 100;
+   
     [SerializeField] protected bool isDead;
 
 
@@ -24,7 +31,10 @@ public class Entity_Health : MonoBehaviour, IDamagable
     {
         entity = GetComponent<Entity>();
         entity_VFX = GetComponent<Entity_VFX>();
-        currentHp = maxHp;
+        healthBar = GetComponentInChildren<Slider>();
+        stats = GetComponent<Entity_Stats>();
+        currentHp = stats.GetMaxHealth();
+        UpdateSlider();
     }
     public virtual void TakeDamage(float damage,Transform damageDealer)
     {
@@ -38,10 +48,17 @@ public class Entity_Health : MonoBehaviour, IDamagable
         ReduceHp(damage);
     }
 
+    public void UpdateSlider()
+    {
+        if (healthBar == null)
+            return;
+        healthBar.value = currentHp / stats.GetMaxHealth();
+    }
 
     protected void ReduceHp(float damage)
     {
         currentHp -= damage;
+        UpdateSlider();
         if (currentHp <= 0)
             Die();
     }
@@ -64,6 +81,7 @@ public class Entity_Health : MonoBehaviour, IDamagable
         return knockBack;
     }
     private float CalculateDuration(float damage) => IsHeavyDamage(damage)? HeavyKnockBackDuration:knockBackDuration;
-    private bool IsHeavyDamage(float damage) => damage / maxHp > heavyDamageThreshold;
+    private bool IsHeavyDamage(float damage) => damage / stats.GetMaxHealth() > heavyDamageThreshold;
     
 }
+ 
