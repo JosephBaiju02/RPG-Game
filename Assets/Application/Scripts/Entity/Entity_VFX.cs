@@ -4,6 +4,9 @@ using System.Collections;
 public class Entity_VFX : MonoBehaviour
 {
     SpriteRenderer sr;
+    private Entity entity;
+
+
 
     [Header("On Taking Damage VFX")]
     [SerializeField] private Material onDamageMaterial;
@@ -12,18 +15,25 @@ public class Entity_VFX : MonoBehaviour
     [Header("On Doing Damage")]
     [SerializeField] private GameObject hitVfx;
     [SerializeField] Color hitVfxColor = Color.white;
+    [SerializeField] private GameObject critHitVfx;
 
     private Material originalMaterial;
     private Coroutine onDamageVfxCoroutine;
     private void Awake()
     {
+        entity = GetComponent<Entity>();
         sr = GetComponentInChildren<SpriteRenderer>();
         originalMaterial = sr.material;
     }
-    public void CreateOnHitVFX(Transform target)
+    public void CreateOnHitVFX(Transform target,bool isCrit)
     {
-      GameObject vfx=  Instantiate(hitVfx,target.position,Quaternion.identity);
+        GameObject hitPrefab = isCrit ? critHitVfx : hitVfx;
+      GameObject vfx=  Instantiate(hitPrefab,target.position,Quaternion.identity);
+        if(isCrit==false)
         vfx.GetComponentInChildren<SpriteRenderer>().color = hitVfxColor;
+
+        if (entity.facingDir == -1 && isCrit)
+            vfx.transform.Rotate(0, 180, 0);
     }
     public void PlayOnDamageVfx()
     {

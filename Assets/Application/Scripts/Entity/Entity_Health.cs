@@ -1,6 +1,8 @@
-using System;
+
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 public class Entity_Health : MonoBehaviour, IDamagable
 {
@@ -36,18 +38,36 @@ public class Entity_Health : MonoBehaviour, IDamagable
         currentHp = stats.GetMaxHealth();
         UpdateSlider();
     }
-    public virtual void TakeDamage(float damage,Transform damageDealer)
+    public virtual bool TakeDamage(float damage, Transform damageDealer)
     {
-        Debug.Log("Take Damage Called");
+        
         if (isDead)
-            return;
-        Vector2 knockBack = CalculateKnockBack(damage,damageDealer);
-        float duration = CalculateDuration(damage);
-        entity?.ReciveKnockBack(knockBack,duration);
+            return false;
+
+        if (AttackEvaded())
+        {
+            Debug.Log(gameObject.name + "Evaded the Attack");
+            return false;
+        }
+
+        float mitigation = stats.GetArmorMitigation();
+        float finalDamage = damage * (1-mitigation);
+
+        Vector2 knockBack = CalculateKnockBack(finalDamage, damageDealer);
+        float duration = CalculateDuration(finalDamage);
+        entity?.ReciveKnockBack(knockBack, duration);
         entity_VFX?.PlayOnDamageVfx();
-        ReduceHp(damage);
+        ReduceHp(finalDamage);
+        Debug.Log("Damage Taken: "+ finalDamage +"Mitigation "+ mitigation);
+
+
+
+        return true;
     }
 
+
+    private bool AttackEvaded()=> Random.Range(0, 100) < stats.GetEvation();
+  
     public void UpdateSlider()
     {
         if (healthBar == null)

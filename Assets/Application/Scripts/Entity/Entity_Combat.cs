@@ -3,8 +3,9 @@ using UnityEngine;
 public class Entity_Combat : MonoBehaviour
 {
     private Entity_VFX vfx;
+    private Entity_Stats Stats;
 
-    public float damage = 1;
+    
 
     [Header("Target Detection")]
     [SerializeField] private Transform targetCheck;
@@ -14,6 +15,7 @@ public class Entity_Combat : MonoBehaviour
     private void Awake()
     {
         vfx = GetComponent<Entity_VFX>();
+        Stats = GetComponent<Entity_Stats>();
     }
 
     public void PerformAttack()
@@ -24,11 +26,13 @@ public class Entity_Combat : MonoBehaviour
             IDamagable damagable = collider.GetComponent<IDamagable>();
             if (damagable == null)
                 continue;
+           
+            float damage = Stats.GetPhyscicalDamage(out bool isCrit);
+           bool targetGotHit= damagable.TakeDamage(damage, transform);
+            if(targetGotHit)
+                vfx.CreateOnHitVFX(collider.transform,isCrit);
 
-            damagable.TakeDamage(damage, transform);
-            vfx.CreateOnHitVFX(collider.transform);
-
-            Debug.Log("Taken Damage" + damagable);
+            
         }
     }
 
